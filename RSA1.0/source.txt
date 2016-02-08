@@ -1,1 +1,1 @@
-Dear Tom: 
+This file is used to save what you want to encrypt

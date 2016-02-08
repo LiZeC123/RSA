@@ -4,10 +4,13 @@
 #define BITWIDTH 2
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 int rsa(int m,int e,int n);
+
 void pre_treat(void);
-void encode(int e,int n);
-void uncode(int d,int n);
+void encrype(int e,int n);
+
+void decode(int d,int n);
 void aft_treat();
+
 int caesar(char c);
 char arccaesar(int n);
 
@@ -16,12 +19,36 @@ int total_letter;
 
 int main(int argc, char *argv[]) {
 	int p=101,q=103,e=2347,fn=10200,n=10403,d=9283;
-	encode(e,n);
+	char choose;
+	printf("Welcome to use Public Key Encryption\n");
+	printf("Do you want to encrype or decode(press e for encrype or u for decode):");
+	scanf("%c",&choose);
+	while(choose!= 'e' && choose != 'u'){
+		printf("\nerror:%c is not a legal parameter\n",choose);
+		//去除缓冲区多余的字符 
+		while(getchar()!='\n'){
+			continue;
+		}
+		printf("please press e for encrype or u for decode:");
+		scanf("%c",&choose);
+	}
+	putchar('\n');
+	 
+	if(choose== 'e'){
+		printf("Now the file source.txt will be encryped");
+		encrype(e,n);	
+	}
+	else{
+		printf("Now the file result.txt will be decoded");
+		decode(d,n);
+		
+	}
+	encrype(e,n);
 	return 0;
 }
 
 int rsa(int m,int e,int n){
-	int bin_edx,i;
+	int bin_edx=0,i;
 	int x=1,power;
 	int binary[MAX_NUMBER];
 	while(e>0){
@@ -29,6 +56,7 @@ int rsa(int m,int e,int n){
 		e=e/2;
 		bin_edx++;
 	}
+	
 	power=m%n;
 	for(i=0;i<bin_edx;i++){
 		if(binary[i]==1){
@@ -39,7 +67,7 @@ int rsa(int m,int e,int n){
 	}
 	return x;
 }
-//源文件预处理 
+
 void pre_treat(void){
 	char c_work;
 	int n_work;
@@ -77,7 +105,7 @@ void pre_treat(void){
 	fp_worked=NULL;
 }
 
-void encode(int e,int n){
+void encrype(int e,int n){
 	pre_treat();
 	FILE *fp_worked;
 	FILE *fp_result;
@@ -95,7 +123,6 @@ void encode(int e,int n){
 		fscanf(fp_worked,"%d",&rsa_c1);
 		fscanf(fp_worked,"%d",&rsa_c2);
 		rsa_c=rsa_c1*100+rsa_c2;
-		//printf("\nthis is rsa_c:%d\n",rsa_c);
 		result=rsa(rsa_c,e,n);
 		fprintf(fp_result,"%d\n",result);
 	}
@@ -137,6 +164,22 @@ char arccaesar(int n){
 	}
 }
 
+void decode(int d,int n){
+	FILE *fp_result;
+	FILE *fp_worked;
+	int n_result,c_work;
+	fp_result=fopen("result.txt","r");
+	fp_worked=fopen("worked.txt","w+");
+	while(fscanf(fp_result,"%d",&n_result)>0){
+		c_work=rsa(n_result,d,n);
+		fprintf(fp_worked,"%d\n",c_work);		
+	}
+	fclose(fp_result);
+	fclose(fp_worked);
+	fp_result=NULL;
+	fp_worked=NULL;
+	aft_treat();
+}
 void aft_treat(){
 	FILE *fp_worked;
 	FILE *fp_source;
@@ -154,20 +197,4 @@ void aft_treat(){
 	fp_source=NULL;
 	fp_worked=NULL;
 }
-
-void uncode(int d,int n){
-	FILE *fp_result;
-	FILE *fp_worked;
-	int n_result,c_work;
-	fp_result=fopen("result.txt","r");
-	fp_worked=fopen("worked.txt","w+");
-	while(fscanf(fp_result,"%d",&n_result)>0){
-		c_work=rsa(n_result,d,n);
-		fprintf(fp_worked,"%d\n",c_work);		
-	}
-	fclose(fp_result);
-	fclose(fp_worked);
-	fp_result=NULL;
-	fp_worked=NULL;
-	aft_treat();
-}
+//this is tht 200th line that I wrote.
