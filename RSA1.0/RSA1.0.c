@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 	scanf("%c",&choose);
 	while(choose!= 'e' && choose != 'u'){
 		printf("\nerror:%c is not a legal parameter\n",choose);
-		//È¥³ý»º³åÇø¶àÓàµÄ×Ö·û 
+		//ÃˆÂ¥Â³Ã½Â»ÂºÂ³Ã¥Ã‡Ã¸Â¶Ã Ã“Ã ÂµÃ„Ã—Ã–Â·Ã» 
 		while(getchar()!='\n'){
 			continue;
 		}
@@ -197,4 +197,4 @@ void aft_treat(){
 	fp_source=NULL;
 	fp_worked=NULL;
 }
-//this is tht 200th line that I wrote.
+//this is the 200th line that I wrote.
