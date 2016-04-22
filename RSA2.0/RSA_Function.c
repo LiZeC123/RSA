@@ -9,16 +9,100 @@ int total_letter;
 static int GetTotalNumber(void);
 
 //如果文件不存在，自动打印错误信息，并结束程序 
-// 存在，则返回对应的文件指针 
+//存在，则返回对应的文件指针 
 static FILE * Sfopen(char * filename); 
 
+//计算一个单位长度的内容的RSA密文 
+static int rsa(int m,int e,int n); 
 
-void create_primer_number(void){
+//加密前对初始文本格式化处理 
+static void pre_treat(void);
+
+//解密后对文本进行格式化处理 
+static void aft_treat();
+
+//将字符转化为数字编码 
+static int caesar(char c);
+
+//将数字编码转化为字符 
+static char arccaesar(int n); 
+
+//创建初始素数表 
+static void create_primer_number(void);
+
+//创建初始配置信息表 
+static void create_configuration(void);
+
+
+void Initialize(void){ 
+	FILE *fp_primer_number;
+	FILE *fp_configuration;
+	
+	fp_primer_number = fopen("primer_number.txt","r");
+	fp_configuration = fopen("configuration.txt","r");
+	
+	if(fp_primer_number == NULL){
+		create_primer_number();
+	}	
+		
+	if(fp_configuration == NULL){
+		create_configuration();
+	}
+	
+	fclose(fp_primer_number);
+	fclose(fp_configuration);
+	
+}
+
+
+void encrype(int e,int n){
+	pre_treat();
+	FILE *fp_worked;
+	FILE *fp_result;
+	fp_worked=Sfopen("worked.txt");
+	fp_result=fopen("result.txt","w");
+	
+	int i,m,rsa_c1,rsa_c2,rsa_c,result;
+	for(i=0;i<total_letter;i=i+2){
+		fscanf(fp_worked,"%d",&rsa_c1);
+		fscanf(fp_worked,"%d",&rsa_c2);
+		rsa_c=rsa_c1*100+rsa_c2;
+		result=rsa(rsa_c,e,n);
+		fprintf(fp_result,"%d\n",result);
+	}
+	
+	fclose(fp_result);
+	fclose(fp_worked);
+	
+	system("rm -f worked.txt"); 
+}
+
+
+void decode(int d,int n){
+	FILE *fp_result;
+	FILE *fp_worked;
+	int n_result,c_work;
+	fp_result=fopen("result.txt","r");
+	fp_worked=fopen("worked.txt","w+");
+	while(fscanf(fp_result,"%d",&n_result)>0){
+		c_work=rsa(n_result,d,n);
+		fprintf(fp_worked,"%d\n",c_work);		
+	}
+	fclose(fp_result);
+	fclose(fp_worked);
+	fp_result=NULL;
+	fp_worked=NULL;
+	aft_treat();
+}
+
+
+static void create_primer_number(void){
 	int i,j;
 	bool flag;
 	FILE *fp_primer_number;
 	fp_primer_number=fopen("primer_number.txt","w");
 	
+	printf("Create primer number...\n");
 	for(i=L_MIT;i<R_MIT;i++){
 		flag=true;
 		if(i%2==0){
@@ -39,16 +123,17 @@ void create_primer_number(void){
 	printf("primer number done !\n");
 }
 
-void create_configuration(void){
+static void create_configuration(void){
 	FILE *fp_configuration;
 	fp_configuration=fopen("configuration.txt","w");
 	
+	printf("Create configuration...\n");
 	fprintf(fp_configuration,"[configuration from file] = 1\n");
 	fprintf(fp_configuration,"[total number] = %d",GetTotalNumber());
 
 	fclose(fp_configuration);
+	printf("configuration done !\n");
 }
-
 
 static FILE * Sfopen(char * filename){
 	FILE *fp = fopen(filename,"r");
@@ -79,7 +164,7 @@ static int GetTotalNumber(void){
 	return count;
 }
 
-int caesar(char c){
+static int caesar(char c){
 	int cae;
 	if(c>30){
 		c=c-30;
@@ -98,7 +183,7 @@ int caesar(char c){
 	}
 }
 
-char arccaesar(int n){
+static char arccaesar(int n){
 	int c;
 	if(n==0){
 		return '\n';
@@ -112,7 +197,6 @@ char arccaesar(int n){
 		return c;
 	}
 }
-
 
 static int rsa(int m,int e,int n){
 	int bin_edx=0,i;
@@ -167,30 +251,11 @@ static void pre_treat(void){
 	fp_worked=NULL;
 }
 
-void encrype(int e,int n){
-	pre_treat();
-	FILE *fp_worked;
-	FILE *fp_result;
-	fp_worked=Sfopen("worked.txt");
-	fp_result=fopen("result.txt","w");
-	
-	int i,m,rsa_c1,rsa_c2,rsa_c,result;
-	for(i=0;i<total_letter;i=i+2){
-		fscanf(fp_worked,"%d",&rsa_c1);
-		fscanf(fp_worked,"%d",&rsa_c2);
-		rsa_c=rsa_c1*100+rsa_c2;
-		result=rsa(rsa_c,e,n);
-		fprintf(fp_result,"%d\n",result);
-	}
-	fclose(fp_result);
-	fp_result=NULL;
-}
-
 static void aft_treat(){
 	FILE *fp_worked;
 	FILE *fp_source;
 	int source_c,source_c1,source_c2;
-	fp_worked=fopen("worked.txt","r");
+	fp_worked=Sfopen("worked.txt");
 	fp_source=fopen("source.txt","w");
 	while(fscanf(fp_worked,"%d",&source_c)>0){
 		source_c1=source_c/100;
@@ -200,25 +265,6 @@ static void aft_treat(){
 	}
 	fclose(fp_source);
 	fclose(fp_worked);
-	fp_source=NULL;
-	fp_worked=NULL;
+	
+	system("rm -f worked.txt"); 
 }
-
-void decode(int d,int n){
-	FILE *fp_result;
-	FILE *fp_worked;
-	int n_result,c_work;
-	fp_result=fopen("result.txt","r");
-	fp_worked=fopen("worked.txt","w+");
-	while(fscanf(fp_result,"%d",&n_result)>0){
-		c_work=rsa(n_result,d,n);
-		fprintf(fp_worked,"%d\n",c_work);		
-	}
-	fclose(fp_result);
-	fclose(fp_worked);
-	fp_result=NULL;
-	fp_worked=NULL;
-	aft_treat();
-}
-
-

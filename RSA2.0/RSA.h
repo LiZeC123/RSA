@@ -14,20 +14,14 @@
 #define L_MIT 100		
 #define R_MIT 173 
 
+//初始化程序运行需要的文件 
+void Initialize(void); 
 
-void create_primer_number(void);
-
-//调用此函数前必须确认primer_number.txt存在 
-void create_configuration(void);
-
-
-
+//参数为公钥，对文本进行加密 
 void encrype(int e,int n);
 
+//参数为私钥，对文本解密 
 void decode(int d,int n);
-
-int caesar(char c);
-char arccaesar(int n);
 
 int total_letter;
 #endif 
