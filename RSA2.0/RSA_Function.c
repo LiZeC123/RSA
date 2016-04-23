@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <math.h>
+#include <time.h>
 #include <stdbool.h>
 #include "RSA.h"
 
@@ -36,6 +37,16 @@ static void create_primer_number(void);
 //创建初始配置信息表 
 static void create_configuration(void);
 
+//随机获取素数表中的一个素数 
+static int GetPrimerNumber(void);
+
+//扩展欧几里得算法 
+static int gcdEx(int a, int b, int *x, int *y);
+
+//欧几里得算法 
+static int gcd(int a,int b);
+
+
 
 void Initialize(void){ 
 	FILE *fp_primer_number;
@@ -65,7 +76,51 @@ void GetConfiguration(void){
 	fclose(fp_configuration);
 } 
 
+Key GetKey(void){
+	srand((unsigned)time(NULL));
+	
+	Key mykey;
+	int p,q;
+	p = GetPrimerNumber();
+	q = GetPrimerNumber();
+	while(p == q){
+		q = GetPrimerNumber();
+	}
+	
+	int n = p*q;
+	int fn = (p-1)*(q-1);
+	int e = ((double)rand()/RAND_MAX) *fn;
+	
+	while(gcd(e,fn) != 1){
+		e = ((double)rand()/RAND_MAX) *fn;
+	}
+	int x,d,Rem;
+	gcdEx(fn,e,&x,&d);
+	Rem = gcd(fn,e);
+	while(d < 0){
+		d += fn;
+	}
+	
+	mykey.n = n;
+	mykey.Pub_key = e;
+	mykey.Pri_key = d;
+	
+	return mykey;
+} 
 
+static int GetPrimerNumber(void){
+	FILE * fp_primer_number;
+	fp_primer_number = Sfopen("primer_number.txt");
+	
+	//避免可能的边界情况 
+	int temp = ((double)rand()/RAND_MAX * (configuration.total_number - 1)) + 1;
+	int aws;
+	while(temp--){
+		fscanf(fp_primer_number,"%d",&aws);
+	}
+	fclose(fp_primer_number);
+	return aws; 
+}
 
 
 
@@ -222,7 +277,7 @@ static char arccaesar(int n){
 
 static int rsa(int m,int e,int n){
 	int bin_edx=0,i;
-	int x=1,power;
+	long long x=1,power;
 	int binary[MAX_NUMBER];
 	while(e>0){
 		binary[bin_edx]=e%2;
@@ -290,4 +345,36 @@ static void aft_treat(){
 	fclose(fp_worked);
 	
 	system("rm -f worked.txt"); 
+}
+
+
+
+
+
+static int gcdEx(int a, int b, int *x, int *y) 
+{
+    if(b==0)
+    {
+        *x = 1,*y = 0;
+        return a;
+    }
+    else
+    {
+        int r = gcdEx(b, a%b, x, y);
+        int t = *x;
+        *x = *y;
+        *y = t - a/b * *y;
+        return r;
+    }
+}
+
+
+static int gcd(int a,int b){
+	int Rem;
+	while(b > 0){
+		Rem = a % b;
+		a = b;
+		b = Rem;
+	}
+	return a;
 }

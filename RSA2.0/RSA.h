@@ -11,8 +11,8 @@
 #define BITWIDTH 2 
       
 //定义随机素数的范围 
-#define L_MIT 100		
-#define R_MIT 173 
+#define L_MIT 1000		
+#define R_MIT 1500 
 
 //包含配置信息的结构 
 typedef struct {
@@ -21,11 +21,21 @@ typedef struct {
 }Configuration;
 
 
+//包含公钥与私钥信息的结构 
+typedef struct{
+	int Pub_key;
+	int Pri_key;
+	int n;
+}Key;
+
 //初始化程序运行需要的文件 
 void Initialize(void); 
 
 //获取从文本读入的配置信息 
 void GetConfiguration(void);
+
+//获得公钥和私钥 
+Key GetKey(void); 
 
 //参数为公钥，对文本进行加密 
 void encrype(int e,int n);
