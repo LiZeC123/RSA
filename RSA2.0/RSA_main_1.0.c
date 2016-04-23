@@ -21,12 +21,12 @@ int main(int argc, char *argv[]) {
 	if(choose== 'e'){
 		printf("Now the file source.txt will be encryped...\n");
 		encrype(e,n);	
-		printf("source.txt has enctyped successful!\n"); 
+		printf("source.txt has been enctyped successful!\n"); 
 	}
 	else{
-		printf("Now the file result.txt will be decoded");
+		printf("Now the file result.txt will be decoded...\n");
 		decode(d,n);
-		
+		printf("result.txt has been decoded successful!\n");
 	}
 	
 	return 0;

@@ -14,8 +14,18 @@
 #define L_MIT 100		
 #define R_MIT 173 
 
+//包含配置信息的结构 
+typedef struct {
+	int configuration_from_file;
+	int total_number;
+}Configuration;
+
+
 //初始化程序运行需要的文件 
 void Initialize(void); 
+
+//获取从文本读入的配置信息 
+void GetConfiguration(void);
 
 //参数为公钥，对文本进行加密 
 void encrype(int e,int n);
@@ -23,5 +33,10 @@ void encrype(int e,int n);
 //参数为私钥，对文本解密 
 void decode(int d,int n);
 
-int total_letter;
+//记录全部字符数量的全局变量 
+int Total_Number;
+
+//记录配置信息的全局变量 
+Configuration configuration;
+
 #endif 

@@ -3,7 +3,10 @@
 #include <math.h>
 #include <stdbool.h>
 #include "RSA.h"
-int total_letter;
+
+
+
+
 
 //计算素数表中素数的总数 
 static int GetTotalNumber(void);
@@ -54,6 +57,17 @@ void Initialize(void){
 	
 }
 
+void GetConfiguration(void){
+	FILE * fp_configuration;
+	fp_configuration = Sfopen("configuration.txt");
+	fscanf(fp_configuration,"[configuration from file] = %d\n",&configuration.configuration_from_file);
+	fscanf(fp_configuration,"[total number] = %d",&configuration.total_number);
+	fclose(fp_configuration);
+} 
+
+
+
+
 
 void encrype(int e,int n){
 	pre_treat();
@@ -63,7 +77,7 @@ void encrype(int e,int n){
 	fp_result=fopen("result.txt","w");
 	
 	int i,m,rsa_c1,rsa_c2,rsa_c,result;
-	for(i=0;i<total_letter;i=i+2){
+	for(i=0;i<Total_Number;i=i+2){
 		fscanf(fp_worked,"%d",&rsa_c1);
 		fscanf(fp_worked,"%d",&rsa_c2);
 		rsa_c=rsa_c1*100+rsa_c2;
@@ -138,11 +152,19 @@ static void create_configuration(void){
 static FILE * Sfopen(char * filename){
 	FILE *fp = fopen(filename,"r");
 	if(fp == NULL){
-		system("cls");
 		fprintf(stderr,"Error :");
 		fprintf(stderr,filename);
 		fprintf(stderr," is not exist!\n");
-		system("pause");
+		
+		FILE * fp_error;
+		fp_error = fopen("Error.txt","w");
+		
+		fprintf(fp_error,"Error :");
+		fprintf(fp_error,filename);
+		fprintf(fp_error," is not exist!\n");
+		
+		fclose(fp_error);
+		
 		exit(1);
 	}
 
@@ -229,13 +251,14 @@ static void pre_treat(void){
 	fp_worked=fopen("worked.txt","w+");
 
 	
-	total_letter=0;
+	Total_Number=0;
+	n_work = 0 ;
 	while(1){
 		c_work=getc(fp_source);
 		n_work=caesar(c_work);
 		if(n_work!= -1){
 			fprintf(fp_worked,"%d\n",n_work);
-			total_letter++;
+			Total_Number++;
 		}
 		else{
 			break;
@@ -243,9 +266,9 @@ static void pre_treat(void){
 	}
 	fclose(fp_source);		
 	fp_source=NULL;
-	while(total_letter%BITWIDTH!=0){
+	while(Total_Number%BITWIDTH!=0){
 		fprintf(fp_worked,"%d\n",2);
-		total_letter++;
+		Total_Number++;
 	}
 	fclose(fp_worked);
 	fp_worked=NULL;
