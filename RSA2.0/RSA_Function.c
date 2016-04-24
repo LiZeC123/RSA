@@ -5,7 +5,15 @@
 #include <stdbool.h>
 #include "RSA.h"
 
-
+//进行二进制 转换时的临时数组的最大限制 
+#define MAX_NUMBER 40	
+			
+//单次加密的字母数量
+#define BITWIDTH 2 
+      
+//定义随机素数的范围 
+#define L_MIT 5000		
+#define R_MIT 10000 
 
 
 
@@ -107,6 +115,35 @@ Key GetKey(void){
 	
 	return mykey;
 } 
+
+void SaveKey(Key key){
+	FILE *fp_Pub_key;
+	FILE *fp_Pri_key;
+	
+	fp_Pub_key = fopen("Pub_key.txt","a");
+	fp_Pri_key = fopen("Pri_key.txt","a");
+	
+	
+	char *wday[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+    time_t timep;
+    struct tm * p;
+    time(&timep);
+    p = localtime(&timep);
+    
+    //月份从零开始计，所以要加一 
+    fprintf (fp_Pub_key,"%d/%02d/%02d %s %02d:%02d:%02d\n", (1900+p->tm_year), (1+p->tm_mon), p->tm_mday,
+						wday[p->tm_wday], p->tm_hour, p->tm_min, p->tm_sec); 
+    fprintf (fp_Pri_key,"%d/%02d/%02d %s %02d:%02d:%02d\n", (1900+p->tm_year), (1+p->tm_mon), p->tm_mday,
+				 		wday[p->tm_wday], p->tm_hour, p->tm_min, p->tm_sec);
+	
+	fprintf(fp_Pub_key,"Your Public  Key Is[ %8d %8d ]\n",key.Pub_key,key.n);
+	fprintf(fp_Pri_key,"Your private Key Is[ %8d %8d ]\n",key.Pri_key,key.n);
+	
+	fclose(fp_Pub_key);
+	fclose(fp_Pri_key);
+}
+
+
 
 static int GetPrimerNumber(void){
 	FILE * fp_primer_number;

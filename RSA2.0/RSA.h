@@ -1,18 +1,7 @@
 #ifndef _RSA_H_
 
 #define _RSA_H_
-//进行二进制 转换时的临时数组的最大限制 
-#define MAX_NUMBER 20
-		
-//一次加密处理的字符数 
-#define BITWIDTH 2
-			
-//单次加密的字母数量
-#define BITWIDTH 2 
-      
-//定义随机素数的范围 
-#define L_MIT 1000		
-#define R_MIT 1500 
+
 
 //包含配置信息的结构 
 typedef struct {
@@ -36,6 +25,9 @@ void GetConfiguration(void);
 
 //获得公钥和私钥 
 Key GetKey(void); 
+
+//将获取的密钥对保存为文本文件 
+void SaveKey(Key key); 
 
 //参数为公钥，对文本进行加密 
 void encrype(int e,int n);

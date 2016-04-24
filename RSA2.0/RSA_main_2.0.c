@@ -37,8 +37,9 @@ int main(int argc, char *argv[]) {
 	else if(choose== 'g'){
 		Key key;
 		key = GetKey();
-		printf("Your Public  Key Is[ %6d %6d ]\n",key.Pub_key,key.n);
-		printf("Your private Key Is[ %6d %6d ]\n",key.Pri_key,key.n);
+		SaveKey(key);
+		printf("Your Public  Key Is[ %8d %8d ]\n",key.Pub_key,key.n);
+		printf("Your private Key Is[ %8d %8d ]\n",key.Pri_key,key.n);
 	}
 	
 	
