@@ -2,6 +2,8 @@
 
 #define _RSA_H_
 
+#define PRIMER_HASH 1207472236
+
 
 //包含配置信息的结构 
 typedef struct {
@@ -22,6 +24,8 @@ void Initialize(void);
 
 //获取从文本读入的配置信息 
 void GetConfiguration(void);
+
+
 
 //获得公钥和私钥 
 Key GetKey(void); 

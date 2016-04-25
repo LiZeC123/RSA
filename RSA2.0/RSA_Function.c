@@ -54,6 +54,11 @@ static int gcdEx(int a, int b, int *x, int *y);
 //欧几里得算法 
 static int gcd(int a,int b);
 
+//哈希函数 
+static unsigned int BKDRHash(char *str);
+
+//检验素数表完整性，未变动则返回true 
+static bool check_primer_number(void);
 
 
 void Initialize(void){ 
@@ -63,7 +68,8 @@ void Initialize(void){
 	fp_primer_number = fopen("primer_number.txt","r");
 	fp_configuration = fopen("configuration.txt","r");
 	
-	if(fp_primer_number == NULL){
+	//文件不存在或者被改动，则重新创建 
+	if( (fp_primer_number == NULL) || (!check_primer_number())){
 		create_primer_number();
 	}	
 		
@@ -414,4 +420,39 @@ static int gcd(int a,int b){
 		b = Rem;
 	}
 	return a;
+}
+
+
+static unsigned int BKDRHash(char *str)
+{
+    unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
+    unsigned int hash = 0;
+
+    while (*str)
+    {
+        hash = hash * seed + (*str++);
+    }
+
+    return (hash & 0x7FFFFFFF);
+}
+
+
+static bool check_primer_number(void){
+	FILE *fp_primer_number;
+	fp_primer_number = Sfopen("primer_number.txt");
+	
+	int max = GetTotalNumber();
+	char primer_number[max][5];
+	//避免数据中未初始化的值对计算的影响
+	//要保证数据填满数组 ，或者进行初始化 
+	
+	for(int i = 0;i<max;i++){
+		fgets(primer_number[i],6,fp_primer_number);
+	}
+	
+	char * str  = primer_number[0];
+	
+	unsigned int answer = BKDRHash(str);
+	
+	return answer == PRIMER_HASH; 
 }
