@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 		key = GetKey();
 		SaveKey(key);
 		printf("Your Public  Key Is[ %8d %8d ]\n",key.Pub_key,key.n);
-		printf("Your private Key Is[ %8d %8d ]\n",key.Pri_key,key.n);
+		printf("Your Private Key Is[ %8d %8d ]\n",key.Pri_key,key.n);
 	}
 	
 	
