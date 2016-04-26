@@ -25,6 +25,12 @@ def main():
         print("Now the file result.txt will be decoded...")
         encrype(int(pri_key[0]),int(pri_key[1]))
         print("result.txt has been decoded successful!")
+    elif choose is 'g':
+        key = []
+        key = GetKeys()
+
+        print("Your Public   Key Is" ,key[1], key[0])
+        print("Your Private  Key Is" ,key[2], key[0])
 
         
         

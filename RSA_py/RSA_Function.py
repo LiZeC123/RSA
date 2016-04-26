@@ -1,6 +1,8 @@
 BITWIDTH = 2
 import os
 from math import sqrt
+import random
+Total_Number = 558
 
 def rsa(m,e,n):
     binary = []
@@ -13,7 +15,6 @@ def rsa(m,e,n):
     for i in binary:
         if i == 1:
             x = (x * power) % n
-
         power = (power * power) % n
 
     return x
@@ -25,7 +26,7 @@ def create_primer_number():
         if IsPrimerNumber(i):
             fp_primer_number.write(str(i) + '\n')
 
-    fp_primer_number.close
+    fp_primer_number.close()
     print("primer number done !\n")
         
 
@@ -57,8 +58,8 @@ def pre_treat():
         for j in range(BITWIDTH):
             temp = temp + bs_source[i+j] * pow(10,3*(BITWIDTH-j-1))
         fp_worked.write(str(temp) + '\n')          
-    fp_worked.close
-    fp_source.close
+    fp_worked.close()
+    fp_source.close()
     
 def encrype(e,n):
     pre_treat()
@@ -72,8 +73,9 @@ def encrype(e,n):
         temp = rsa(int(num),e,n)
         fp_result.write(str(temp) + '\n')
 
-    fp_worked.close
-    fp_result.close
+    fp_worked.close()
+    fp_result.close()
+    os.remove("worked.txt")
 
 def decode(d,n):
     fp_result = open("result.txt","r")
@@ -96,5 +98,67 @@ def decode(d,n):
     fp_source.close
     fp_result.close
     
+def create_configuration():
+    fp_configuration=open("configuration.txt","w")
+    print("Create configuration...")
+    fp_configuration.write("[configuration from file] = 1\n")
+    fp_configuration.write("[total number] = 558")
+    fp_configuration.close()
 
+def gcdEx( a , b ):
+    if (b == 0):
+        return 1, 0, a
+    else:
+        x , y , q = gcdEx( b , a % b )
+        x , y = y, ( x - (a // b) * y )
+        return x, y, q
+
+def gcd(a,b):
+    while b > 0:
+        Rem = a % b
+        a = b
+        b = Rem
+    return a
+
+def GetKeys():
+    p = GetPrimerNumber()
+    q = GetPrimerNumber()
+    while p is q:
+        q = GetPrimerNumber()
+
+    n = p * q
+    fn = (p-1) * (q-1)
+
+    e = int(random.random() * fn)
+
+    while gcd(e,fn) is not 1 :
+        e = int(random.random() * fn)
+
+    x,d,q = gcdEx(fn,e)
+
+    while d < 0:
+        d = d + fn
+
+    key = []
+    key.append(n)
+    key.append(e)
+    key.append(d)
+
+    return key
+
+def GetPrimerNumber():
+    fp_primer_number = open("primer_number.txt")
+    temp = random.random() * (Total_Number - 1)
+    while temp > 0:
+        anw = fp_primer_number.readline()
+        temp = temp -1
+        
+    anw = anw[:-1]
+    fp_primer_number.close()
+    return int(anw)
+    
+
+    
+
+    
     
