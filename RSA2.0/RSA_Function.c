@@ -214,7 +214,7 @@ static void create_primer_number(void){
 	FILE *fp_primer_number;
 	fp_primer_number=fopen("primer_number.txt","w");
 	
-	printf("Create primer number...\n");
+	printf("Create primer number list...\n");
 	for(i=L_MIT;i<R_MIT;i++){
 		flag=true;
 		if(i%2==0){
