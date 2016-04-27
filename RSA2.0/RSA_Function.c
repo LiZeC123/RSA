@@ -9,7 +9,7 @@
 #define MAX_NUMBER 40	
 			
 //单次加密的字母数量
-#define BITWIDTH 2 
+#define BITWIDTH 3 
       
 //定义随机素数的范围 
 #define L_MIT 5000		
@@ -174,13 +174,17 @@ void encrype(int e,int n){
 	fp_worked=Sfopen("worked.txt");
 	fp_result=fopen("result.txt","w");
 	
-	int i,m,rsa_c1,rsa_c2,rsa_c,result;
-	for(i=0;i<Total_Number;i=i+2){
-		fscanf(fp_worked,"%d",&rsa_c1);
-		fscanf(fp_worked,"%d",&rsa_c2);
-		rsa_c=rsa_c1*100+rsa_c2;
-		result=rsa(rsa_c,e,n);
-		fprintf(fp_result,"%d\n",result);
+	int code,rsa_code;
+	for(int i=0;i<Total_Number;i=i+BITWIDTH){
+		int temp = 0;
+		for(int j=0;j<BITWIDTH;j++){
+			fscanf(fp_worked,"%d",&code);
+			temp = temp + code * pow(10,2*(BITWIDTH-j-1));
+		}
+		rsa_code = rsa(temp,e,n);
+		
+
+		fprintf(fp_result,"%d\n",rsa_code);
 	}
 	
 	fclose(fp_result);
@@ -195,7 +199,7 @@ void decode(int d,int n){
 	FILE *fp_worked;
 	int n_result,c_work;
 	fp_result=fopen("result.txt","r");
-	fp_worked=fopen("worked.txt","w+");
+	fp_worked=fopen("worked.txt","w");
 	while(fscanf(fp_result,"%d",&n_result)>0){
 		c_work=rsa(n_result,d,n);
 		fprintf(fp_worked,"%d\n",c_work);		
@@ -364,7 +368,7 @@ static void pre_treat(void){
 	}
 	fclose(fp_source);		
 	fp_source=NULL;
-	while(Total_Number%BITWIDTH!=0){
+	while(Total_Number % BITWIDTH != 0){
 		fprintf(fp_worked,"%d\n",2);
 		Total_Number++;
 	}
@@ -375,14 +379,16 @@ static void pre_treat(void){
 static void aft_treat(){
 	FILE *fp_worked;
 	FILE *fp_source;
-	int source_c,source_c1,source_c2;
+	int code;
 	fp_worked=Sfopen("worked.txt");
 	fp_source=fopen("source.txt","w");
-	while(fscanf(fp_worked,"%d",&source_c)>0){
-		source_c1=source_c/100;
-		source_c2=source_c%100;
-		fprintf(fp_source,"%c",arccaesar(source_c1));
-		fprintf(fp_source,"%c",arccaesar(source_c2));
+	while(fscanf(fp_worked,"%d",&code)>0){
+		int temp = 0;
+		for(int j=0;j<BITWIDTH;j++){
+			temp = code / (int)pow(10,2 * (BITWIDTH - j -1));
+			fprintf(fp_source,"%c",arccaesar(temp));
+			code = code % (int)pow(10,2 * (BITWIDTH - j -1));
+		}
 	}
 	fclose(fp_source);
 	fclose(fp_worked);
