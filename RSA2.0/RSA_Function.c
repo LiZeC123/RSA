@@ -7,15 +7,7 @@
 
 //进行二进制 转换时的临时数组的最大限制 
 #define MAX_NUMBER 40	
-			
-//单次加密的字母数量
-#define BITWIDTH 3 
-      
-//定义随机素数的范围 
-#define L_MIT 5000		
-#define R_MIT 10000 
-
-
+			      
 
 //计算素数表中素数的总数 
 static int GetTotalNumber(void);
@@ -85,8 +77,11 @@ void Initialize(void){
 void GetConfiguration(void){
 	FILE * fp_configuration;
 	fp_configuration = Sfopen("configuration.txt");
-	fscanf(fp_configuration,"[configuration from file] = %d\n",&configuration.configuration_from_file);
-	fscanf(fp_configuration,"[total number] = %d",&configuration.total_number);
+	fscanf(fp_configuration,"[Configuration From File] = %d\n",&configuration.configuration_from_file);
+	fscanf(fp_configuration,"[Total Number] = %d\n",&configuration.total_number);	
+	fscanf(fp_configuration,"[L_MIT] = %d\n",&configuration.L_MIT);
+	fscanf(fp_configuration,"[R_MIT] = %d\n",&configuration.R_MIT);
+	fscanf(fp_configuration,"[BITWIDTH] = %d\n",&configuration.BITWIDTH);
 	fclose(fp_configuration);
 } 
 
@@ -175,11 +170,11 @@ void encrype(int e,int n){
 	fp_result=fopen("result.txt","w");
 	
 	int code,rsa_code;
-	for(int i=0;i<Total_Number;i=i+BITWIDTH){
+	for(int i=0;i<Total_Number;i=i+configuration.BITWIDTH){
 		int temp = 0;
-		for(int j=0;j<BITWIDTH;j++){
+		for(int j=0;j<configuration.BITWIDTH;j++){
 			fscanf(fp_worked,"%d",&code);
-			temp = temp + code * pow(10,2*(BITWIDTH-j-1));
+			temp = temp + code * pow(10,2*(configuration.BITWIDTH-j-1));
 		}
 		rsa_code = rsa(temp,e,n);
 		
@@ -219,7 +214,7 @@ static void create_primer_number(void){
 	fp_primer_number=fopen("primer_number.txt","w");
 	
 	printf("Create primer number list...\n");
-	for(i=L_MIT;i<R_MIT;i++){
+	for(i=configuration.L_MIT;i<configuration.R_MIT;i++){
 		flag=true;
 		if(i%2==0){
 			flag=false;
@@ -244,8 +239,11 @@ static void create_configuration(void){
 	fp_configuration=fopen("configuration.txt","w");
 	
 	printf("Create configuration...\n");
-	fprintf(fp_configuration,"[configuration from file] = 1\n");
-	fprintf(fp_configuration,"[total number] = %d",GetTotalNumber());
+	fprintf(fp_configuration,"[Configuration From File] = 1\n");
+	fprintf(fp_configuration,"[Total Number] = %d\n",GetTotalNumber());
+	fprintf(fp_configuration,"[L_MIT] = 5000\n");
+	fprintf(fp_configuration,"[R_MIT] = 9999\n");
+	fprintf(fp_configuration,"[BITWIDTH] = 3\n");
 
 	fclose(fp_configuration);
 	printf("configuration done !\n");
@@ -368,7 +366,7 @@ static void pre_treat(void){
 	}
 	fclose(fp_source);		
 	fp_source=NULL;
-	while(Total_Number % BITWIDTH != 0){
+	while(Total_Number % configuration.BITWIDTH != 0){
 		fprintf(fp_worked,"%d\n",2);
 		Total_Number++;
 	}
@@ -384,10 +382,10 @@ static void aft_treat(){
 	fp_source=fopen("source.txt","w");
 	while(fscanf(fp_worked,"%d",&code)>0){
 		int temp = 0;
-		for(int j=0;j<BITWIDTH;j++){
-			temp = code / (int)pow(10,2 * (BITWIDTH - j -1));
+		for(int j=0;j<configuration.BITWIDTH;j++){
+			temp = code / (int)pow(10,2 * (configuration.BITWIDTH - j -1));
 			fprintf(fp_source,"%c",arccaesar(temp));
-			code = code % (int)pow(10,2 * (BITWIDTH - j -1));
+			code = code % (int)pow(10,2 * (configuration.BITWIDTH - j -1));
 		}
 	}
 	fclose(fp_source);

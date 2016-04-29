@@ -9,6 +9,11 @@
 typedef struct {
 	int configuration_from_file;
 	int total_number;
+	//随机素数的范围 
+	int L_MIT; 
+	int R_MIT;
+	//单次加密的字母数量
+	int BITWIDTH;
 }Configuration;
 
 
@@ -24,8 +29,6 @@ void Initialize(void);
 
 //获取从文本读入的配置信息 
 void GetConfiguration(void);
-
-
 
 //获得公钥和私钥 
 Key GetKey(void); 
